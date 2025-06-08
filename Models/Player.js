@@ -1,4 +1,4 @@
-import GameBoard from './GB';
+import GameBoard from './GameBoard';
 
 class Player {
   constructor(isRealPlayer) {
