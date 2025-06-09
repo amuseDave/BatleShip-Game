@@ -7,8 +7,14 @@ describe('gameboard', () => {
     obj.gameBoard = new GameBoard();
   });
 
-  it('random ship placement', () => {
+  test.only('random ship placement', () => {
     const error = obj.gameBoard.placeShip();
+
+    expect(obj.gameBoard.ships.length).toBe(1);
+    expect(error).toBeFalsy();
+  });
+  it('random ship placement with size', () => {
+    const error = obj.gameBoard.placeShip(undefined, 3);
 
     expect(obj.gameBoard.ships.length).toBe(1);
     expect(error).toBeFalsy();
@@ -25,7 +31,7 @@ describe('gameboard', () => {
     const error = obj.gameBoard.placeShip({ x: [4, 4], y: [6, 9] }, 6);
 
     expect(obj.gameBoard.ships.length).toBe(0);
-    expect(error).toBe('incorrect ship size');
+    expect(error).toBe('invalid size');
   });
 
   it('incorrect specified ship size duplicate', () => {
@@ -34,7 +40,7 @@ describe('gameboard', () => {
 
     expect(obj.gameBoard.ships.length).toBe(1);
     expect(error).toBeFalsy();
-    expect(error2).toBe('incorrect ship size');
+    expect(error2).toBe('invalid size');
   });
 
   it('incorrect specified ship placement out of bounds', () => {
