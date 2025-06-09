@@ -1,18 +1,18 @@
-import {
-  getRandomElement,
-  getElement,
-  copyGameBoardGrid,
-  createGameBoardGrid,
-} from '../utils';
+import { getRandomElement, getElement } from '../utils';
 import Ship from './Ship';
 
 class GameBoard {
   constructor() {
-    this.availableShips = new Set([2, 3, 3, 4, 5]); // Available ship sizes
+    this.availableShips = new Map([
+      [2, 1],
+      [3, 2],
+      [4, 1],
+      [5, 1],
+    ]); // Available ship sizes
     this.ships = []; // Track ship state
     this.attacks = []; // Track attacks on the game board
-    this.gameBoardSize = 10;
-    this.gameBoardValidPositions = createGameBoardGrid(this.gameBoardSize);
+    this.size = 10;
+    this.validPositions = GameBoard.createGrid(this.size);
   }
 
   placeShip(coords, size) {
@@ -20,19 +20,18 @@ class GameBoard {
     //**********************//
     // Handle Validation //
     //**********************//
-    if (size) {
-      const el = this.availableShips.has(size);
-      if (!el) return 'invalid size';
-    }
+    if (size) if (!this.isShipAvailable(size)) return 'invalid position';
     if (coords) {
     }
 
     //**********************//
     // Handle Ship Placement //
     //**********************//
-    if (!size) size = getRandomElement([...this.availableShips]);
+    if (!size) [size] = getRandomElement([...this.availableShips]);
     if (!coords) coords = this.placeRandom(size);
-    this.availableShips.delete(size);
+
+    this.availableShips.set(size, this.availableShips.get(size) - 1);
+    if (!this.availableShips.get(size)) this.availableShips.delete(size);
 
     // Handle placement
   }
@@ -40,7 +39,7 @@ class GameBoard {
   placeRandom(shipLength) {
     // console.log(this.validPositions);
 
-    const copiedValidPosGrid = copyGameBoardGrid(this.gameBoardValidPositions);
+    const copiedValidPosGrid = GameBoard.copyGrid(this.validPositions);
 
     // Create validPosGridCopy
     // to Remove Invalid Positions with given shipSize
@@ -50,8 +49,7 @@ class GameBoard {
     const startPositions = { x: null, y: null };
 
     while (copiedValidPosGrid.size) {
-      const [randomX] = getRandomElement([...copiedValidPosGrid]);
-      const randomY = getRandomElement([...copiedValidPosGrid.get(randomX)]);
+      const [randomX, randomY] = this.getRandomPosition(copiedValidPosGrid);
 
       // Check for all valid positions for
       // randomX + shipLength(X) && randoX - shipLength(X)
@@ -61,39 +59,38 @@ class GameBoard {
 
       break;
     }
-
-    // while (startingPositionsX.length && startingPositionsY.length) {
-    //   const randomIdxX = Math.floor(Math.random() * startingPositionsX.length);
-    //   const randomIdxY = Math.floor(Math.random() * startingPositionsY.length);
-    //   const validX = startingPositionsX[randomIdxX] - shipLength;
-    //   const validX2 = startingPositionsX[randomIdxX] + shipLength;
-    //   const validY = startingPositionsY[randomIdxY] - shipLength;
-    //   const validY2 = startingPositionsY[randomIdxY] + shipLength;
-    //   for (const x of this.validPositions.x) {
-    //     if (validX === x) valids.x.push(x);
-    //     if (validX2 === x) valids.x.push(x);
-    //     if (validX2 || validX) if (valids.x.length === 2) break;
-    //   }
-    //   for (const y of this.validPositions.y) {
-    //     if (validY === y) valids.y.push(y);
-    //     if (validY2 === y) valids.y.push(y);
-    //     if (validY2 || validY) if (valids.y.length === 2) break;
-    //   }
-    //   if (!valids.x.length && !valids.y.length) {
-    //     startingPositionsX.splice(randomIdxX, 1);
-    //     startingPositionsY.splice(randomIdxY, 1);
-    //     continue;
-    //   }
-    //   startPosition.x = startingPositionsX[randomIdxX];
-    //   startPosition.y = startingPositionsY[randomIdxY];
-    //   break;
-    // }
-    // console.log(startPosition, 'start position');
-    // console.log(valids, 'valid positions');
-    // pasirinkti is rastu geru poziciju random pozicija
   }
 
   receiveAttack(coords) {}
+
+  getRandomPosition(gridPositions) {
+    const [[randomX]] = getRandomElement([...gridPositions]);
+    const [randomY] = getRandomElement([...gridPositions.get(randomX)]);
+    return [randomX, randomY];
+  }
+
+  isShipAvailable(size) {
+    return this.availableShips.has(size);
+  }
+
+  static createGrid(size) {
+    const grid = new Map();
+    for (let i = 0; i < size; i++) {
+      grid.set(i, new Set());
+      for (let j = 0; j < size; j++) {
+        grid.get(i).add(j);
+      }
+    }
+    return grid;
+  }
+
+  static copyGrid(grid) {
+    const copy = new Map(grid);
+    for (const [key, set] of grid) {
+      copy.set(key, new Set(set));
+    }
+    return copy;
+  }
 }
 
 export default GameBoard;

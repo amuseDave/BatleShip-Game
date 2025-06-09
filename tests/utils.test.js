@@ -1,21 +1,18 @@
-import { copyGameBoardGrid, copyGrid, createGameBoardGrid } from '../utils';
+import { getElement, getRandomElement } from '../utils';
 
-describe('utils', () => {
-  it('copies game board grid', () => {
-    const gameBoard = createGameBoardGrid(6);
-    const copiedGrid = copyGameBoardGrid(gameBoard);
+describe('utility functions', () => {
+  const arr = [1, 2, 3, 4, 5, 6];
 
-    expect(gameBoard).not.toBe(copiedGrid);
-    expect(gameBoard.get(0)).not.toBe(copiedGrid.get(0));
-
-    expect(gameBoard).toStrictEqual(copiedGrid);
-    expect(gameBoard.get(0)).toStrictEqual(copiedGrid.get(0));
+  it('gets random element', () => {
+    const [el, idx] = getRandomElement(arr);
+    expect(arr[idx] === el && arr[idx] !== undefined).toBeTruthy();
   });
-
-  it('creates game board grid', () => {
-    const gameBoard = createGameBoardGrid(4);
-    expect(gameBoard.size).toBe(4);
-    expect(gameBoard.get(0).size).toBe(4);
-    expect(gameBoard.get(0).has(3)).toBeTruthy();
+  it('gets specified element', () => {
+    const [el, idx] = getElement(arr, 3);
+    expect(arr[idx] === el && arr[idx] !== undefined).toBeTruthy();
+  });
+  it("doesn't find specified element", () => {
+    const el = getElement(arr, 7);
+    expect(el).toBeFalsy();
   });
 });
