@@ -1,34 +1,29 @@
 export function getRandomElement(arr) {
-  const idx = Math.floor(Math.random * arr.length);
-  return [arr[idx], idx];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function getElement(arr, element) {
   for (let i = 0; i < arr.length; i++) {
-    if (arr[i] === element) return [arr[i], i];
+    if (arr[i] === element) return arr[i];
   }
 }
 
 export function copyGameBoardGrid(grid) {
-  const copy = [...grid];
+  const copy = new Map(grid);
 
-  for (let i = 0; i < copy.length; i++) {
-    copy[i] = [copy[i][0], new Set([...copy[i][1]])];
+  for (const [key, set] of grid) {
+    copy.set(key, new Set(set));
   }
-
-  console.log(copy[0] === grid[0]);
-  console.log(copy[0][1] === grid[0][1]);
-  console.log(copy, grid);
 
   return copy;
 }
 
 export function createGameBoardGrid(size) {
-  const grid = [];
+  const grid = new Map();
   for (let i = 0; i < size; i++) {
-    grid.push([i, new Set()]);
+    grid.set(i, new Set());
     for (let j = 0; j < size; j++) {
-      grid[i][1].add(j);
+      grid.get(i).add(j);
     }
   }
   return grid;
