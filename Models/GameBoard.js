@@ -2,7 +2,7 @@ import { getRandomElement, getElement, getRange } from '../utils.js';
 import Ship from './Ship.js';
 
 class GameBoard {
-  constructor(size) {
+  constructor(size = 10) {
     this.availableShips = new Map([
       [2, 1],
       [3, 2],
@@ -196,6 +196,24 @@ class GameBoard {
       copy.set(key, new Set(set));
     }
     return copy;
+  }
+
+  static buildDOM(size) {
+    const gameBoard = document.createElement('div');
+    gameBoard.classList = 'gameboard';
+    gameBoard.style.gridTemplateColumns = `repeat(20px, ${size})`;
+    gameBoard.style.gridTemplateRows = `repeat(20px, ${size})`;
+
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        const gridCell = document.createElement('div');
+        gridCell.dataset.cellPosition = `${j}-${i}`;
+        gridCell.classList = 'grid-cell';
+        gameBoard.append(gridCell);
+      }
+    }
+
+    return gameBoard;
   }
 }
 

@@ -4,7 +4,7 @@ class Player {
   constructor(isRealPlayer) {
     this.isMyTurn = false;
     this.isRealPlayer = isRealPlayer;
-    this.gameBoard = new GameBoard(10);
+    this.gameBoard = new GameBoard();
 
     if (!isRealPlayer) this.generateShipsRandomPos();
   }
