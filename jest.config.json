@@ -8,7 +8,7 @@
         "sort": "status",
         "includeFailureMsg": true,
         "includeConsoleLog": true,
-        "includeStackTrace": false,
+        "includeStackTrace": true,
         "collapseSuitesByDefault": true
       }
     ]

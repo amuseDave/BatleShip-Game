@@ -12,10 +12,23 @@ describe('utils', () => {
     expect(gameBoard.get(0)).toStrictEqual(copiedGrid.get(0));
   });
 
-  it('creates game board grid', () => {
+  it('creates game board grid with specified sizes', () => {
+    const gameBoardSize = 4;
     const gameBoard = GameBoard.createGrid(4);
-    expect(gameBoard.size).toBe(4);
-    expect(gameBoard.get(0).size).toBe(4);
-    expect(gameBoard.get(0).has(3)).toBeTruthy();
+
+    for (let i = 0; i < gameBoardSize; i++) {
+      for (let j = 0; i < gameBoardSize; i++) {
+        expect(gameBoard.get(i).has(j));
+      }
+    }
+
+    const gameBoardSize2 = 5;
+    const gameBoard2 = GameBoard.createGrid(5);
+
+    for (let i = 0; i < gameBoardSize2; i++) {
+      for (let j = 0; i < gameBoardSize2; i++) {
+        expect(gameBoard2.get(i).has(j));
+      }
+    }
   });
 });

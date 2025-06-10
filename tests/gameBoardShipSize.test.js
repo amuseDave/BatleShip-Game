@@ -3,20 +3,26 @@ import GameBoard from '../Models/GameBoard';
 describe('gameboard ship size', () => {
   const obj = {};
   beforeEach(() => {
-    obj.gameBoard = new GameBoard();
+    obj.gameBoard = new GameBoard(10);
   });
 
-  it('incorrect ship size', () => {
-    const isValid = obj.gameBoard.isShipAvailable(8);
+  it("doesn't have ship specified size", () => {
+    const isValid = obj.gameBoard.isShipAvailable(100);
     expect(isValid).toBeFalsy();
   });
 
-  it('correct ship size', () => {
+  it('has ship specified size', () => {
     const isValid = obj.gameBoard.isShipAvailable(4);
     expect(isValid).toBeTruthy();
   });
 
-  it('incorrect duplicate ship size', () => {
+  it('deletes available ship size', () => {
+    expect(obj.gameBoard.availableShips.has(4)).toBeTruthy();
+    obj.gameBoard.deleteAvailableShip(4);
+    expect(obj.gameBoard.availableShips.has(4)).toBeFalsy();
+  });
+
+  it('incorrect specified duplicate ship size', () => {
     obj.gameBoard.placeShip(undefined, 4);
     const isValid = obj.gameBoard.isShipAvailable(4);
 

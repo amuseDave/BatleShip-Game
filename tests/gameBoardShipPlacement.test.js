@@ -4,7 +4,7 @@ describe('gameboard ship placement', () => {
   const obj = {};
 
   beforeEach(() => {
-    obj.gameBoard = new GameBoard();
+    obj.gameBoard = new GameBoard(10);
   });
 
   it('random ship placement', () => {
@@ -21,7 +21,7 @@ describe('gameboard ship placement', () => {
   });
 
   it('correct specified ship placement', () => {
-    const error = obj.gameBoard.placeShip({ x: [4, 4], y: [6, 9] }, 3);
+    const error = obj.gameBoard.placeShip({ x: [4, 4], y: [6, 9] }, 4);
 
     expect(obj.gameBoard.ships.length).toBe(1);
     expect(error).toBeFalsy();
@@ -57,5 +57,12 @@ describe('gameboard ship placement', () => {
     expect(obj.gameBoard.ships.length).toBe(1);
     expect(error).toBeFalsy();
     expect(error2).toBeTruthy();
+  });
+
+  it('incorrect specified not matching size position placement', () => {
+    const error = obj.gameBoard.placeShip({ x: [4, 4], y: [8, 8] }, 3);
+
+    expect(obj.gameBoard.ships.length).toBe(0);
+    expect(error).toBeTruthy();
   });
 });

@@ -1,8 +1,8 @@
-import { getRandomElement, getElement } from '../utils';
+import { getRandomElement, getElement, getRange } from '../utils';
 import Ship from './Ship';
 
 class GameBoard {
-  constructor() {
+  constructor(size) {
     this.availableShips = new Map([
       [2, 1],
       [3, 2],
@@ -11,66 +11,172 @@ class GameBoard {
     ]); // Available ship sizes
     this.ships = []; // Track ship state
     this.attacks = []; // Track attacks on the game board
-    this.size = 10;
+    this.size = size;
     this.validPositions = GameBoard.createGrid(this.size);
+    this.copiedValidPosGrid;
   }
 
   placeShip(coords, size) {
-    let shipSizeIdx;
     //**********************//
     // Handle Validation //
     //**********************//
-    if (size) if (!this.isShipAvailable(size)) return 'invalid position';
+    if (size) if (!this.isShipAvailable(size)) return 'invalid size';
     if (coords) {
+      let [[startX, endX], [startY, endY]] = [coords.x, coords.y];
+      const rangeX = getRange(startX, endX);
+      const rangeY = getRange(startY, endY);
+
+      for (let i = 0; i < rangeX.length; i++) {
+        for (let j = 0; j < rangeY.length; j++) {
+          if (!GameBoard.validateGridPos(rangeX[i], rangeY[j], this.validPositions))
+            return 'invalid coords';
+        }
+      }
+
+      let isValid = false;
+
+      const valids = [];
+      valids.push(...this.getValidXPath(size, startX, startY));
+      valids.push(...this.getValidYPath(size, startX, startY));
+
+      for (let i = 0; i < valids.length; i++) {
+        if (valids[i].x[0] !== coords.x[0]) continue;
+        if (valids[i].x[1] !== coords.x[1]) continue;
+        if (valids[i].y[0] !== coords.y[0]) continue;
+        if (valids[i].y[1] !== coords.y[1]) continue;
+        isValid = true;
+      }
+      if (!isValid) return 'invalid coords';
     }
 
     //**********************//
     // Handle Ship Placement //
     //**********************//
-    if (!size) [size] = getRandomElement([...this.availableShips]);
-    if (!coords) coords = this.placeRandom(size);
 
-    this.availableShips.set(size, this.availableShips.get(size) - 1);
-    if (!this.availableShips.get(size)) this.availableShips.delete(size);
+    if (!size) [[size]] = getRandomElement([...this.availableShips]);
+    if (!coords) coords = this.getRandomCoords(size);
 
-    // Handle placement
+    // ********************* //
+    // Handle Placement //
+    // ********************* //
+
+    this.ships.push({ ship: new Ship(size), coords });
+    // ********************* //
+    // Delete available ship size  //
+    // ********************* //
+    this.deleteAvailableShip(size);
+
+    // ********************* //
+    // Delete valid position spots //
+    // ********************* //
+    let [[startX, endX], [startY, endY]] = [coords.x, coords.y];
+    const rangeX = getRange(startX, endX);
+    const rangeY = getRange(startY, endY);
+    for (let i = 0; i < rangeX.length; i++) {
+      for (let j = 0; j < rangeY.length; j++) {
+        GameBoard.deleteGridPos(rangeX[i], rangeY[j], this.validPositions);
+      }
+    }
   }
 
-  placeRandom(shipLength) {
-    // console.log(this.validPositions);
+  getRandomCoords(shipLength) {
+    this.copiedValidPosGrid = GameBoard.copyGrid(this.validPositions);
 
-    const copiedValidPosGrid = GameBoard.copyGrid(this.validPositions);
+    const validPositions = [];
 
-    // Create validPosGridCopy
-    // to Remove Invalid Positions with given shipSize
-    // First select random X & Y start positions
+    while (this.copiedValidPosGrid.size) {
+      const [randomX, randomY] = GameBoard.getRandomPosition(this.copiedValidPosGrid);
 
-    const validPositions = { x: [], y: [] };
-    const startPositions = { x: null, y: null };
+      const validX = this.getValidXPath(shipLength, randomX, randomY);
+      const validY = this.getValidYPath(shipLength, randomX, randomY);
 
-    while (copiedValidPosGrid.size) {
-      const [randomX, randomY] = this.getRandomPosition(copiedValidPosGrid);
+      if (validX.length) validPositions.push(...validX);
+      if (validY.length) validPositions.push(...validY);
 
-      // Check for all valid positions for
-      // randomX + shipLength(X) && randoX - shipLength(X)
-      // randomY + shipLength(Y) && randoY - shipLength(Y)
-      // Create utility function for reusability in checking when user manually inputs
-      // for (let i = mainXIdx + 1; i < mainXIdx + shipLength; i++) {}
+      if (validPositions.length) break;
 
-      break;
+      GameBoard.deleteGridPos(randomX, randomY, this.copiedValidPosGrid);
     }
+
+    return getRandomElement(validPositions)[0];
+  }
+
+  getValidXPath(shipLength, X, Y) {
+    const validPositions = [];
+    for (let i = X + 1; i < X + shipLength; i++) {
+      if (this.validPositions.has(i)) {
+        if (this.validPositions.get(i).has(Y)) {
+          if (X + shipLength - 1 === i) {
+            validPositions.push({ x: [X, i], y: [Y, Y] });
+            break;
+          }
+        } else break;
+      } else break;
+    }
+    for (let i = X - 1; i > X - shipLength; i--) {
+      if (this.validPositions.has(i)) {
+        if (this.validPositions.get(i).has(Y)) {
+          if (X - shipLength + 1 === i) {
+            validPositions.push({ x: [X, i], y: [Y, Y] });
+            break;
+          }
+        } else break;
+      } else break;
+    }
+
+    return validPositions;
+  }
+
+  getValidYPath(shipLength, X, Y) {
+    const validPositions = [];
+
+    for (let i = Y + 1; i < Y + shipLength; i++) {
+      if (this.validPositions.get(X).has(i)) {
+        if (Y + shipLength - 1 === i) {
+          validPositions.push({ x: [X, X], y: [Y, i] });
+          break;
+        }
+      } else break;
+    }
+
+    for (let i = Y - 1; i > Y - shipLength; i--) {
+      if (this.validPositions.get(X).has(i)) {
+        if (Y - shipLength + 1 === i) {
+          validPositions.push({ x: [X, X], y: [Y, i] });
+          break;
+        }
+      } else break;
+    }
+
+    return validPositions;
+  }
+
+  deleteAvailableShip(shipSize) {
+    this.availableShips.set(shipSize, this.availableShips.get(shipSize) - 1);
+    if (!this.availableShips.get(shipSize)) this.availableShips.delete(shipSize);
   }
 
   receiveAttack(coords) {}
 
-  getRandomPosition(gridPositions) {
+  isShipAvailable(size) {
+    return this.availableShips.has(size);
+  }
+
+  static validateGridPos(x, y, grid) {
+    return grid.get(x)?.has(y);
+  }
+
+  static deleteGridPos(x, y, grid) {
+    grid.get(x).delete(y);
+    if (!grid.get(x).size) {
+      grid.delete(x);
+    }
+  }
+
+  static getRandomPosition(gridPositions) {
     const [[randomX]] = getRandomElement([...gridPositions]);
     const [randomY] = getRandomElement([...gridPositions.get(randomX)]);
     return [randomX, randomY];
-  }
-
-  isShipAvailable(size) {
-    return this.availableShips.has(size);
   }
 
   static createGrid(size) {
