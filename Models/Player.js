@@ -6,11 +6,11 @@ class Player {
     this.isRealPlayer = isRealPlayer;
     this.gameBoard = new GameBoard(10);
 
-    this.generateShipsRandomPos();
+    if (!isRealPlayer) this.generateShipsRandomPos();
   }
 
   generateShipsRandomPos() {
-    while (this.gameBoard.shipStack.length) {
+    while (this.gameBoard.availableShips.size) {
       this.gameBoard.placeShip();
     }
   }
