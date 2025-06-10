@@ -8,3 +8,13 @@ export function getElement(arr, element) {
     if (arr[i] === element) return [arr[i], i];
   }
 }
+
+export function getRange(start, end) {
+  const range = [start];
+  while (start !== end) {
+    if (start > end) start--;
+    else if (start < end) start++;
+    range.push(start);
+  }
+  return range;
+}

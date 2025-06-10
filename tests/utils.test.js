@@ -1,4 +1,4 @@
-import { getElement, getRandomElement } from '../utils';
+import { getElement, getRandomElement, getRange } from '../utils';
 
 describe('utility functions', () => {
   const arr = [1, 2, 3, 4, 5, 6];
@@ -14,5 +14,10 @@ describe('utility functions', () => {
   it("doesn't find specified element", () => {
     const el = getElement(arr, 7);
     expect(el).toBeFalsy();
+  });
+
+  it('gets the range from specified start & end pos', () => {
+    const range = getRange(0, 10);
+    expect(range).toStrictEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 });
