@@ -18,3 +18,21 @@ export function getRange(start, end) {
   }
   return range;
 }
+
+export function buildDOMGameBoard(size) {
+  const gameBoard = document.createElement('div');
+  gameBoard.classList = 'gameboard';
+  gameBoard.style.gridTemplateColumns = `repeat(20px, ${size})`;
+  gameBoard.style.gridTemplateRows = `repeat(20px, ${size})`;
+
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      const gridCell = document.createElement('div');
+      gridCell.dataset.cellPosition = `${i}-${j}`;
+      gridCell.classList = 'grid-cell';
+      gameBoard.append(gridCell);
+    }
+  }
+
+  return gameBoard;
+}

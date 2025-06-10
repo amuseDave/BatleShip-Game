@@ -1,5 +1,5 @@
-import { getRandomElement, getElement, getRange } from '../utils';
-import Ship from './Ship';
+import { getRandomElement, getElement, getRange } from '../utils.js';
+import Ship from './Ship.js';
 
 class GameBoard {
   constructor(size) {
