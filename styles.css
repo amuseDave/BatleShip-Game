@@ -7,20 +7,21 @@ html {
   font-size: 62.5%;
 }
 body {
+  text-align: center;
   background-color: rgb(27, 27, 43);
 }
 
 #game-container {
-  height: 100dvh;
+  position: relative;
+  margin-top: 20rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .gameboard {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(10, 4.8rem);
-  grid-template-rows: repeat(10, 4.8rem);
   gap: 4px;
   border-collapse: separate;
 }
@@ -33,4 +34,35 @@ body {
 
 .gameboard-npc .grid-cell {
   cursor: pointer;
+}
+#controller {
+  margin: 0 auto;
+}
+
+#game-btn {
+  margin-top: 2rem;
+  font-size: 2.4rem;
+  padding: 0.6rem;
+  cursor: pointer;
+  width: 40rem;
+  cursor: not-allowed;
+  text-align: center;
+}
+
+#drag-cont {
+  margin-top: 1.2rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: start;
+  max-width: 458px;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+}
+
+.ship {
+  background-color: blue;
+  border-radius: 1rem;
+  flex-shrink: 0;
+  flex-grow: 0;
 }

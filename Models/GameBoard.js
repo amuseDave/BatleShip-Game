@@ -3,17 +3,8 @@ import Ship from './Ship.js';
 
 class GameBoard {
   constructor(size = 10) {
-    this.availableShips = new Map([
-      [2, 1],
-      [3, 2],
-      [4, 1],
-      [5, 1],
-    ]); // Available ship sizes
-    this.ships = []; // Track ship state
-    this.attacks = []; // Track attacks on the game board
     this.size = size;
-    this.validPositions = GameBoard.createGrid(this.size);
-    this.copiedValidPosGrid;
+    this.#init();
   }
 
   placeShip(coords, size) {
@@ -59,7 +50,6 @@ class GameBoard {
     // ********************* //
     // Handle Placement //
     // ********************* //
-
     this.ships.push({ ship: new Ship(size), coords });
     // ********************* //
     // Delete available ship size  //
@@ -162,6 +152,19 @@ class GameBoard {
     return this.availableShips.has(size);
   }
 
+  #init() {
+    this.availableShips = new Map([
+      [2, 1],
+      [3, 2],
+      [4, 1],
+      [5, 1],
+    ]); // Available ship sizes
+    this.ships = []; // Track ship state
+    this.attacks = []; // Track attacks on the game board
+    this.validPositions = GameBoard.createGrid(this.size);
+    this.copiedValidPosGrid;
+  }
+
   static validateGridPos(x, y, grid) {
     return grid.get(x)?.has(y);
   }
@@ -201,8 +204,8 @@ class GameBoard {
   static buildDOM(size) {
     const gameBoard = document.createElement('div');
     gameBoard.classList = 'gameboard';
-    gameBoard.style.gridTemplateColumns = `repeat(20px, ${size})`;
-    gameBoard.style.gridTemplateRows = `repeat(20px, ${size})`;
+    gameBoard.style.gridTemplateColumns = `repeat(${size}, 4.2rem)`;
+    gameBoard.style.gridTemplateRows = `repeat(${size}, 4.2rem)`;
 
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
