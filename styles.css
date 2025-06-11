@@ -35,6 +35,24 @@ body {
 .gameboard-npc .grid-cell {
   cursor: pointer;
 }
+
+#drag-cont {
+  margin-top: 1.2rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+}
+
+.ship {
+  background-color: blue;
+  border-radius: 1rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
 #controller {
   margin: 0 auto;
 }
@@ -47,22 +65,4 @@ body {
   width: 40rem;
   cursor: not-allowed;
   text-align: center;
-}
-
-#drag-cont {
-  margin-top: 1.2rem;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  justify-content: start;
-  max-width: 458px;
-  flex-wrap: wrap;
-  gap: 1.1rem;
-}
-
-.ship {
-  background-color: blue;
-  border-radius: 1rem;
-  flex-shrink: 0;
-  flex-grow: 0;
 }

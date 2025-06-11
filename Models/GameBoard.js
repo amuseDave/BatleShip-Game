@@ -4,7 +4,7 @@ import Ship from './Ship.js';
 class GameBoard {
   constructor(size = 10) {
     this.size = size;
-    this.#init();
+    this.init();
   }
 
   placeShip(coords, size) {
@@ -152,7 +152,7 @@ class GameBoard {
     return this.availableShips.has(size);
   }
 
-  #init() {
+  init() {
     this.availableShips = new Map([
       [2, 1],
       [3, 2],
