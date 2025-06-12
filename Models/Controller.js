@@ -24,6 +24,17 @@ class Controller {
 
     this.generateDraggableShips();
     this.generateDragZones();
+
+    this.generatePlayer2Ships();
+  }
+
+  generatePlayer2Ships() {
+    const ships = [...this.player2.DOM_SHIPS];
+
+    while (ships.length) {
+      const [ship] = ships.splice(Math.floor(Math.random() * ships.length), 1);
+      this.player2.gameBoard.placeShip({ id: ship.dataset.id });
+    }
   }
 
   generateDraggableShips() {

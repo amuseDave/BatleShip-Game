@@ -31,7 +31,6 @@ class GameBoard {
 
   getRandomCoords(ship) {
     const validStartPositions = new Set(this.validGrid);
-    console.log(validStartPositions);
     const validPositions = [];
 
     while (validStartPositions.size) {
@@ -39,9 +38,9 @@ class GameBoard {
         Math.floor(Math.random() * validStartPositions.size)
       ];
 
-      console.log(randomStartPos);
-
+      //** find valid path based on start position here */
       break;
+      console.log(randomStartPos);
 
       const validX = this.getValidXPath(shipLength, randomX, randomY);
       const validY = this.getValidYPath(shipLength, randomX, randomY);
@@ -51,21 +50,27 @@ class GameBoard {
 
       if (validPositions.length) break;
 
-      GameBoard.deleteGridPos(randomX, randomY, this.copiedValidPosGrid);
+      validStartPositions.delete(randomStartPos);
     }
 
     return getRandomElement(validPositions)[0];
   }
 
-  getValidXPath() {}
-  getValidYPath() {}
+  getValidXPath(ship) {
+    // If the ship has coordinates enable them to be valid
+    const set = new Set();
+  }
+  getValidYPath(ship) {
+    // If the ship has coordinates enable them to be valid
+    const set = new Set();
+  }
 
   receiveAttack(coords) {}
 
   static buildGrid(size) {
     const set = new Set();
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
         set.add(`${j}-${i}`);
       }
     }
