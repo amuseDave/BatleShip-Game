@@ -34,12 +34,12 @@ describe('gameboard ship placement', () => {
     expect(error).toBeTruthy();
   });
 
-  it('incorrect specified ship size duplicate', () => {
+  it('specified ship size duplicate change pos', () => {
     const error = obj.gameBoard.placeShip({ x: [4, 4], y: [6, 9] }, 4);
     const error2 = obj.gameBoard.placeShip({ x: [4, 7], y: [5, 5] }, 4);
 
     expect(obj.gameBoard.ships.length).toBe(1);
-    expect(error).toBeFalsy();
+    expect(error).toBeTruthy();
     expect(error2).toBeTruthy();
   });
 
