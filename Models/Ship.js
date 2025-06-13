@@ -21,6 +21,7 @@ class Ship {
 
       div.dataset.id = id;
       div.dataset.length = length;
+      div.dataset.direction = 'horizontal';
 
       div.classList.add('ship');
       div.style.width = `calc(4.2rem * ${length})`;

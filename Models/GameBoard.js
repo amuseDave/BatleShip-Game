@@ -22,13 +22,13 @@ class GameBoard {
     //**********************//
     if (coords) {
       console.log(coords);
+      return;
     }
 
     //**********************//
     // Get Random Coords//
     //**********************//
     if (!coords) coords = this.getRandomCoords(ship);
-
     ship.coords = coords;
   }
 
@@ -84,7 +84,6 @@ class GameBoard {
 
     for (let i = 1; i < ship.length; i++) {
       const posStr = `${startPos.slice(0, 2)}${+startPos[2] + i}`;
-      console.log(posStr);
 
       if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
         pos1.add(posStr);

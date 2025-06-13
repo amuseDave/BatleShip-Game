@@ -22,7 +22,7 @@ body {
 .gameboard {
   position: relative;
   display: grid;
-  gap: 4px;
+  gap: 2px;
   border-collapse: separate;
 }
 

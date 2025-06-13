@@ -41,11 +41,28 @@ class Controller {
     this.dragCont.style.width = `${this.player.DOM.clientWidth}px`;
     for (const shipEL of this.player.DOM_SHIPS) {
       shipEL.draggable = true;
-      this.dragCont.append(shipEL);
+      shipEL.style.cursor = 'move';
 
       shipEL.addEventListener('dragstart', (e) => {
+        const gridCell = e.target.closest('.grid-cell');
+        if (gridCell) {
+          setTimeout(() => {
+            gridCell.style.zIndex = 0;
+          }, 0);
+        }
+        e.target.style.zIndex = 0;
         this.dragged = e.target;
       });
+      shipEL.addEventListener('dragend', (e) => {
+        const gridCell = e.target.closest('.grid-cell');
+        if (gridCell) {
+          setTimeout(() => {
+            gridCell.style.zIndex = 1;
+          }, 0);
+        }
+        e.target.style.zIndex = 1;
+      });
+      this.dragCont.append(shipEL);
     }
   }
 
@@ -56,27 +73,40 @@ class Controller {
       el.addEventListener('dragover', (event) => {
         event.preventDefault();
       });
-
-      el.addEventListener('dragenter', (event) => {
+      el.addEventListener('dragenter', () => {
         if (this.isGameStarted) return;
-
-        el.style.backgroundColor = 'red';
+        el.style.backgroundColor = 'orange';
       });
-
-      el.addEventListener('dragleave', (event) => {
+      el.addEventListener('dragleave', () => {
         if (this.isGameStarted) return;
-
         el.style.backgroundColor = 'transparent';
       });
 
-      el.addEventListener('drop', (event) => {
+      el.addEventListener('drop', () => {
         if (this.isGameStarted) return;
 
-        el.style.backgroundColor = 'transparent';
+        const gridCell = el;
 
-        const gridCell = event.target;
+        this.dragged.style.cursor = 'pointer';
+        gridCell.style.backgroundColor = 'transparent';
+        gridCell.style.zIndex = 1;
+
         const gridPos = gridCell.dataset.cellPosition;
+        const { length, direction, id } = this.dragged.dataset;
 
+        const coords = new Set([gridPos]);
+
+        for (let i = 1; i < length; i++) {
+          const posStr =
+            direction === 'horizontal'
+              ? `${+gridPos[0] + i}${gridPos.slice(1)}`
+              : `${gridPos.slice(0, 2)}${+gridPos[2] + i}}`;
+
+          coords.add(posStr);
+        }
+
+        const ship = this.player.gameBoard.placeShip({ coords, id });
+        // Append if the pos is valid
         gridCell.append(this.dragged);
       });
     });
