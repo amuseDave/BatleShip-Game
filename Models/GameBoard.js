@@ -21,15 +21,42 @@ class GameBoard {
     // Handle Coord Validation //
     //**********************//
     if (coords) {
-      console.log(coords);
-      return;
+      const validPositions = [];
+      const startPos = [...coords][0];
+      validPositions.push(...this.getValidXPath(startPos, ship));
+      validPositions.push(...this.getValidYPath(startPos, ship));
+
+      let isValid = false;
+
+      for (const element of validPositions) {
+        if (JSON.stringify([...element]) === JSON.stringify([...coords])) isValid = true;
+      }
+
+      if (!isValid) return;
     }
 
     //**********************//
     // Get Random Coords//
     //**********************//
     if (!coords) coords = this.getRandomCoords(ship);
+
+    //**********************//
+    // Delete valid coords after ship placement
+    // If coords are from the same ship but changed add them back
+    //**********************//
+    for (const pos of ship.coords) {
+      this.validGrid.add(pos);
+    }
+    for (const pos of coords) {
+      this.validGrid.delete(pos);
+    }
+
+    //**********************//
+    // Set valid coords
+    //**********************//
     ship.coords = coords;
+
+    return ship;
   }
 
   getRandomCoords(ship) {

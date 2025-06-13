@@ -89,7 +89,6 @@ class Controller {
 
         this.dragged.style.cursor = 'pointer';
         gridCell.style.backgroundColor = 'transparent';
-        gridCell.style.zIndex = 1;
 
         const gridPos = gridCell.dataset.cellPosition;
         const { length, direction, id } = this.dragged.dataset;
@@ -101,11 +100,11 @@ class Controller {
             direction === 'horizontal'
               ? `${+gridPos[0] + i}${gridPos.slice(1)}`
               : `${gridPos.slice(0, 2)}${+gridPos[2] + i}}`;
-
           coords.add(posStr);
         }
 
         const ship = this.player.gameBoard.placeShip({ coords, id });
+        if (!ship) return 'Invalid Ship Position';
         // Append if the pos is valid
         gridCell.append(this.dragged);
       });
