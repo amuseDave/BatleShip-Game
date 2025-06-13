@@ -55,7 +55,6 @@ class GameBoard {
     // Set valid coords
     //**********************//
     ship.coords = coords;
-
     return ship;
   }
 
@@ -84,14 +83,14 @@ class GameBoard {
     const pos1 = new Set([startPos]);
     const pos2 = new Set([startPos]);
 
-    for (let i = 1; i < ship.length; i++) {
+    for (let i = 0; i < ship.length; i++) {
       const posStr = `${+startPos[0] + i}${startPos.slice(1)}`;
       if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
         pos1.add(posStr);
       } else break;
     }
 
-    for (let i = 1; i < ship.length; i++) {
+    for (let i = 0; i < ship.length; i++) {
       const posStr = `${+startPos[0] - i}${startPos.slice(1)}`;
       if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
         pos2.add(posStr);

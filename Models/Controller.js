@@ -40,6 +40,7 @@ class Controller {
   generateDraggableShips() {
     this.dragCont.style.width = `${this.player.DOM.clientWidth}px`;
     for (const shipEL of this.player.DOM_SHIPS) {
+      shipEL.style.transformOrigin = 'left';
       shipEL.draggable = true;
       shipEL.style.cursor = 'move';
 
@@ -61,6 +62,31 @@ class Controller {
           }, 0);
         }
         e.target.style.zIndex = 1;
+      });
+      shipEL.addEventListener('click', (e) => {
+        //**********************//
+        // Handle changin directions if clicked
+        //**********************//
+        const gridCell = e.target.closest('.grid-cell');
+        if (!gridCell) return;
+
+        const gridPos = gridCell.dataset.cellPosition;
+        const { length, direction, id } = shipEL.dataset;
+
+        const coords = new Set([gridPos]);
+
+        for (let i = 1; i < length; i++) {
+          const posStr =
+            direction === 'vertical'
+              ? `${+gridPos[0] + i}${gridPos.slice(1)}`
+              : `${gridPos.slice(0, 2)}${+gridPos[2] + i}`;
+          coords.add(posStr);
+        }
+
+        const ship = this.player.gameBoard.placeShip({ coords, id });
+        if (!ship) return 'Invalid Ship Position';
+        shipEL.dataset.direction = direction === 'vertical' ? 'horizontal' : 'vertical';
+        shipEL.style.transform = `rotate(${direction === 'vertical' ? '0deg' : '90deg'})`;
       });
       this.dragCont.append(shipEL);
     }
@@ -99,7 +125,7 @@ class Controller {
           const posStr =
             direction === 'horizontal'
               ? `${+gridPos[0] + i}${gridPos.slice(1)}`
-              : `${gridPos.slice(0, 2)}${+gridPos[2] + i}}`;
+              : `${gridPos.slice(0, 2)}${+gridPos[2] + i}`;
           coords.add(posStr);
         }
 
