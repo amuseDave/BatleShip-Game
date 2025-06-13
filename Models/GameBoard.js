@@ -1,4 +1,3 @@
-import { getRandomElement, getElement } from '../utils.js';
 import Ship from './Ship.js';
 
 class GameBoard {
@@ -21,11 +20,15 @@ class GameBoard {
     //**********************//
     // Handle Coord Validation //
     //**********************//
+    if (coords) {
+      console.log(coords);
+    }
 
     //**********************//
     // Get Random Coords//
     //**********************//
     if (!coords) coords = this.getRandomCoords(ship);
+
     ship.coords = coords;
   }
 
@@ -38,31 +41,67 @@ class GameBoard {
         Math.floor(Math.random() * validStartPositions.size)
       ];
 
-      //** find valid path based on start position here */
-      break;
-      console.log(randomStartPos);
-
-      const validX = this.getValidXPath(shipLength, randomX, randomY);
-      const validY = this.getValidYPath(shipLength, randomX, randomY);
-
-      if (validX.length) validPositions.push(...validX);
-      if (validY.length) validPositions.push(...validY);
+      validPositions.push(...this.getValidXPath(randomStartPos, ship));
+      validPositions.push(...this.getValidYPath(randomStartPos, ship));
 
       if (validPositions.length) break;
-
       validStartPositions.delete(randomStartPos);
     }
 
-    return getRandomElement(validPositions)[0];
+    return validPositions[Math.floor(Math.random() * validPositions.length)];
   }
 
-  getValidXPath(ship) {
-    // If the ship has coordinates enable them to be valid
-    const set = new Set();
+  getValidXPath(startPos, ship) {
+    const validPos = [];
+
+    const pos1 = new Set([startPos]);
+    const pos2 = new Set([startPos]);
+
+    for (let i = 1; i < ship.length; i++) {
+      const posStr = `${+startPos[0] + i}${startPos.slice(1)}`;
+      if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
+        pos1.add(posStr);
+      } else break;
+    }
+
+    for (let i = 1; i < ship.length; i++) {
+      const posStr = `${+startPos[0] - i}${startPos.slice(1)}`;
+      if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
+        pos2.add(posStr);
+      } else break;
+    }
+
+    if (pos1.size === ship.length) validPos.push(pos1);
+    if (pos2.size === ship.length) validPos.push(pos2);
+
+    return validPos;
   }
-  getValidYPath(ship) {
-    // If the ship has coordinates enable them to be valid
-    const set = new Set();
+  getValidYPath(startPos, ship) {
+    const validPos = [];
+
+    const pos1 = new Set([startPos]);
+    const pos2 = new Set([startPos]);
+
+    for (let i = 1; i < ship.length; i++) {
+      const posStr = `${startPos.slice(0, 2)}${+startPos[2] + i}`;
+      console.log(posStr);
+
+      if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
+        pos1.add(posStr);
+      } else break;
+    }
+
+    for (let i = 1; i < ship.length; i++) {
+      const posStr = `${startPos.slice(0, 2)}${+startPos[2] - i}`;
+      if (this.validGrid.has(posStr) || ship.coords.has(posStr)) {
+        pos2.add(posStr);
+      } else break;
+    }
+
+    if (pos1.size === ship.length) validPos.push(pos1);
+    if (pos2.size === ship.length) validPos.push(pos2);
+
+    return validPos;
   }
 
   receiveAttack(coords) {}

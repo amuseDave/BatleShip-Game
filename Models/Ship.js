@@ -3,7 +3,7 @@ class Ship {
     this.length = length;
     this.id = crypto.randomUUID();
     this.hits = 0;
-    this.coords = null;
+    this.coords = new Set();
   }
 
   hit() {
