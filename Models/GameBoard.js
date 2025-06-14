@@ -26,10 +26,13 @@ class GameBoard {
       validPositions.push(...this.getValidXPath(startPos, ship));
       validPositions.push(...this.getValidYPath(startPos, ship));
 
+      console.log(validPositions);
+
       let isValid = false;
 
       for (const element of validPositions) {
-        if (JSON.stringify([...element]) === JSON.stringify([...coords])) isValid = true;
+        if (JSON.stringify([...element.pos]) === JSON.stringify([...coords]))
+          isValid = true;
       }
 
       if (!isValid) return;
@@ -38,7 +41,11 @@ class GameBoard {
     //**********************//
     // Get Random Coords//
     //**********************//
-    if (!coords) coords = this.getRandomCoords(ship);
+    if (!coords) {
+      const { pos, direction } = this.getRandomCoords(ship);
+      ship.direction = direction;
+      coords = pos;
+    }
 
     //**********************//
     // Delete valid coords after ship placement
@@ -97,8 +104,8 @@ class GameBoard {
       } else break;
     }
 
-    if (pos1.size === ship.length) validPos.push(pos1);
-    if (pos2.size === ship.length) validPos.push(pos2);
+    if (pos1.size === ship.length) validPos.push({ pos: pos1, direction: 'horizontal' });
+    if (pos2.size === ship.length) validPos.push({ pos: pos2, direction: 'horizontal' });
 
     return validPos;
   }
@@ -123,8 +130,8 @@ class GameBoard {
       } else break;
     }
 
-    if (pos1.size === ship.length) validPos.push(pos1);
-    if (pos2.size === ship.length) validPos.push(pos2);
+    if (pos1.size === ship.length) validPos.push({ pos: pos1, direction: 'vertical' });
+    if (pos2.size === ship.length) validPos.push({ pos: pos2, direction: 'vertical' });
 
     return validPos;
   }

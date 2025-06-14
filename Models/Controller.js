@@ -21,19 +21,60 @@ class Controller {
     this.player2.DOM_SHIPS = Ship.buildDOM(this.player2.gameBoard.ships);
 
     this.gameContainerEl.append(this.player.DOM);
+    this.gameContainerEl.append(this.player2.DOM);
 
+    this.generateButton();
     this.generateDraggableShips();
     this.generateDragZones();
 
-    this.generatePlayer2Ships();
+    this.generatePlayer2NPCShips();
   }
 
-  generatePlayer2Ships() {
-    const ships = [...this.player2.DOM_SHIPS];
+  startGame() {
+    this.isGameStarted = true;
+  }
+  generateButton() {
+    this.gameBtn.addEventListener('click', () => {
+      if (this.dragCont.children.length < 1) {
+        this.startGame();
+      }
+    });
+  }
+  generatePlayer2NPCShips() {
+    const DOM_SHIPS = [...this.player2.DOM_SHIPS];
 
-    while (ships.length) {
-      const [ship] = ships.splice(Math.floor(Math.random() * ships.length), 1);
-      this.player2.gameBoard.placeShip({ id: ship.dataset.id });
+    while (DOM_SHIPS.length) {
+      const [DOM_SHIP] = DOM_SHIPS.splice(
+        Math.floor(Math.random() * DOM_SHIPS.length),
+        1
+      );
+      const ship = this.player2.gameBoard.placeShip({ id: DOM_SHIP.dataset.id });
+
+      DOM_SHIP.classList.remove(
+        ship.direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y'
+      );
+      DOM_SHIP.classList.add(
+        ship.direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
+      );
+      console.log(ship);
+
+      DOM_SHIP.style.width =
+        ship.direction === 'vertical' ? '2.8rem' : `calc(4.2rem * ${ship.length})`;
+      DOM_SHIP.style.height =
+        ship.direction === 'vertical' ? `calc(4.2rem * ${ship.length})` : '2.8rem';
+
+      const coords = [...ship.coords];
+      const first = coords[0];
+      const last = coords[coords.length - 1];
+
+      let gridPos;
+
+      if (first[0] < last[0] || first[2] < last[2]) gridPos = first;
+      else gridPos = last;
+
+      this.player2.DOM.querySelector(
+        `.grid-cell[data-cell-position="${gridPos}"]`
+      ).append(DOM_SHIP);
     }
   }
 
@@ -44,6 +85,7 @@ class Controller {
       shipEL.style.cursor = 'move';
 
       shipEL.addEventListener('dragstart', (e) => {
+        if (this.isGameStarted) return;
         const gridCell = e.target.closest('.grid-cell');
         if (gridCell) {
           setTimeout(() => {
@@ -54,6 +96,7 @@ class Controller {
         this.dragged = e.target;
       });
       shipEL.addEventListener('dragend', (e) => {
+        if (this.isGameStarted) return;
         const gridCell = e.target.closest('.grid-cell');
         if (gridCell) {
           setTimeout(() => {
@@ -63,6 +106,7 @@ class Controller {
         e.target.style.zIndex = 1;
       });
       shipEL.addEventListener('click', (e) => {
+        if (this.isGameStarted) return;
         //**********************//
         // Handle changin directions if clicked
         //**********************//
@@ -91,10 +135,10 @@ class Controller {
         shipEL.style.height =
           direction === 'vertical' ? '2.8rem' : `calc(4.2rem * ${length})`;
 
-        this.dragged.classList.add(
+        shipEL.classList.add(
           direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y'
         );
-        this.dragged.classList.remove(
+        shipEL.classList.remove(
           direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
         );
       });
@@ -151,6 +195,11 @@ class Controller {
 
         // Append if the pos is valid
         gridCell.append(this.dragged);
+
+        if (this.dragCont.children.length === 0) {
+          this.gameBtn.disabled = false;
+          this.gameBtn.style.cursor = 'pointer';
+        }
       });
     });
   }
