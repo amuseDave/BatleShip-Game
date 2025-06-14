@@ -4,7 +4,7 @@ class GameBoard {
   constructor(size = 10) {
     this.size = size;
     this.ships = [new Ship(5), new Ship(4), new Ship(3), new Ship(3), new Ship(2)];
-    this.attacks = []; // Track attacks on the game board
+    this.attacks = new Set(); // Track attacks on the game board
     this.validGrid = GameBoard.buildGrid(this.size);
   }
 
@@ -136,7 +136,9 @@ class GameBoard {
     return validPos;
   }
 
-  receiveAttack(coords) {}
+  receiveAttack(coords) {
+    if (this.attacks.has(coords)) return 'Invalid Attack';
+  }
 
   static buildGrid(size) {
     const set = new Set();

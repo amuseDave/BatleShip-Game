@@ -28,10 +28,28 @@ class Controller {
     this.generateDragZones();
 
     this.generatePlayer2NPCShips();
+
+    this.generateControls();
   }
 
   startGame() {
     this.isGameStarted = true;
+    this.player2.DOM.style.display = 'grid';
+    this.gameBtn.style.display = 'none';
+    this.player.DOM_SHIPS.forEach((ship) => {
+      ship.style.cursor = 'not-allowed';
+      ship.draggable = false;
+    });
+    this.player2.DOM.style.cursor = 'pointer';
+  }
+  generateControls() {
+    this.player2.DOM.addEventListener('click', (e) => {
+      if (this.player.isMyTurn) {
+        const state = this.player2.gameBoard.receiveAttack(
+          e.target.closest('.grid-cell').dataset.cellPosition
+        );
+      }
+    });
   }
   generateButton() {
     this.gameBtn.addEventListener('click', () => {
@@ -48,6 +66,7 @@ class Controller {
         Math.floor(Math.random() * DOM_SHIPS.length),
         1
       );
+      DOM_SHIP.style.display = 'none';
       const ship = this.player2.gameBoard.placeShip({ id: DOM_SHIP.dataset.id });
 
       DOM_SHIP.classList.remove(
@@ -56,7 +75,6 @@ class Controller {
       DOM_SHIP.classList.add(
         ship.direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
       );
-      console.log(ship);
 
       DOM_SHIP.style.width =
         ship.direction === 'vertical' ? '2.8rem' : `calc(4.2rem * ${ship.length})`;
@@ -75,6 +93,8 @@ class Controller {
       this.player2.DOM.querySelector(
         `.grid-cell[data-cell-position="${gridPos}"]`
       ).append(DOM_SHIP);
+
+      this.player2.DOM.style.display = 'none';
     }
   }
 
