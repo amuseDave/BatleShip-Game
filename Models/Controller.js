@@ -40,7 +40,6 @@ class Controller {
   generateDraggableShips() {
     this.dragCont.style.width = `${this.player.DOM.clientWidth}px`;
     for (const shipEL of this.player.DOM_SHIPS) {
-      shipEL.style.transformOrigin = 'left';
       shipEL.draggable = true;
       shipEL.style.cursor = 'move';
 
@@ -86,7 +85,18 @@ class Controller {
         const ship = this.player.gameBoard.placeShip({ coords, id });
         if (!ship) return 'Invalid Ship Position';
         shipEL.dataset.direction = direction === 'vertical' ? 'horizontal' : 'vertical';
-        shipEL.style.transform = `rotate(${direction === 'vertical' ? '0deg' : '90deg'})`;
+
+        shipEL.style.width =
+          direction === 'vertical' ? `calc(4.2rem * ${length})` : '2.8rem';
+        shipEL.style.height =
+          direction === 'vertical' ? '2.8rem' : `calc(4.2rem * ${length})`;
+
+        this.dragged.classList.add(
+          direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y'
+        );
+        this.dragged.classList.remove(
+          direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
+        );
       });
       this.dragCont.append(shipEL);
     }
@@ -131,6 +141,14 @@ class Controller {
 
         const ship = this.player.gameBoard.placeShip({ coords, id });
         if (!ship) return 'Invalid Ship Position';
+
+        this.dragged.classList.add(
+          direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
+        );
+        this.dragged.classList.remove(
+          direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y'
+        );
+
         // Append if the pos is valid
         gridCell.append(this.dragged);
       });

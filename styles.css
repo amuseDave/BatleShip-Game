@@ -56,6 +56,16 @@ body {
   flex-grow: 0;
   z-index: 3;
 }
+.ship-placed-x {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ship-placed-y {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 #controller {
   margin: 0 auto;
