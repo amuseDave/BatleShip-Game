@@ -44,10 +44,22 @@ class Controller {
   }
   generateControls() {
     this.player2.DOM.addEventListener('click', (e) => {
-      if (this.player.isMyTurn) {
-        const state = this.player2.gameBoard.receiveAttack(
-          e.target.closest('.grid-cell').dataset.cellPosition
-        );
+      if (this.player.isMyTurn && this.isGameStarted) {
+        const gridCell = e.target.closest('.grid-cell');
+
+        if (gridCell) {
+          const state = this.player2.gameBoard.receiveAttack(
+            gridCell.dataset.cellPosition
+          );
+          if (state === 'Invalid Attack') return;
+
+          if (state.isHit) gridCell.style.backgroundColor = 'rgb(254, 108, 108)';
+          else {
+            gridCell.style.backgroundColor = 'rgb(152, 200, 255)';
+          }
+
+          gridCell.style.cursor = 'not-allowed';
+        }
       }
     });
   }

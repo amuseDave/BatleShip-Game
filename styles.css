@@ -50,7 +50,7 @@ body {
 
 .ship {
   position: relative;
-  background-color: blue;
+  background-color: rgb(5, 10, 37);
   border: 1px solid black;
   border-radius: 2rem;
   flex-shrink: 0;

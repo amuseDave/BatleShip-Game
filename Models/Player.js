@@ -2,8 +2,7 @@ import GameBoard from './GameBoard.js';
 
 class Player {
   constructor(isRealPlayer) {
-    this.isMyTurn = false;
-    this.isRealPlayer = isRealPlayer;
+    this.isMyTurn = isRealPlayer;
     this.gameBoard = new GameBoard();
   }
 }
