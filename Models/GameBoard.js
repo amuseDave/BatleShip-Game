@@ -140,19 +140,27 @@ class GameBoard {
   receiveAttack(coords) {
     if (this.attacks.has(coords)) return 'Invalid Attack';
     this.attacks.add(coords);
-    console.log(coords);
-
+    let shipDOM;
     let isHit = false;
     let isSunk = false;
     for (const ship of this.ships) {
       if (ship.coords.has(coords)) {
         isHit = true;
         ship.hit();
-        if (ship.isSunk()) isSunk = true;
+        if (ship.isSunk()) {
+          isSunk = true;
+          shipDOM = ship.DOM;
+        }
+      }
+    }
+    let gameEnd = true;
+    if (isSunk) {
+      for (const ship of this.ships) {
+        if (!ship.isSunk()) gameEnd = false;
       }
     }
 
-    return { isHit, isSunk };
+    return { isHit, isSunk, shipDOM, gameEnd };
   }
 
   static buildGrid(size) {

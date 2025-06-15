@@ -1,6 +1,5 @@
 import GameBoard from './GameBoard.js';
 import Player from './Player.js';
-import Ship from './Ship.js';
 
 class Controller {
   constructor() {
@@ -16,9 +15,6 @@ class Controller {
 
     this.player.DOM = GameBoard.buildDOM(this.player.gameBoard.size);
     this.player2.DOM = GameBoard.buildDOM(this.player2.gameBoard.size);
-
-    this.player.DOM_SHIPS = Ship.buildDOM(this.player.gameBoard.ships);
-    this.player2.DOM_SHIPS = Ship.buildDOM(this.player2.gameBoard.ships);
 
     this.gameContainerEl.append(this.player.DOM);
     this.gameContainerEl.append(this.player2.DOM);
@@ -36,9 +32,9 @@ class Controller {
     this.isGameStarted = true;
     this.player2.DOM.style.display = 'grid';
     this.gameBtn.style.display = 'none';
-    this.player.DOM_SHIPS.forEach((ship) => {
-      ship.style.cursor = 'not-allowed';
-      ship.draggable = false;
+    this.player.gameBoard.ships.forEach((ship) => {
+      ship.DOM.style.cursor = 'not-allowed';
+      ship.DOM.draggable = false;
     });
     this.player2.DOM.style.cursor = 'pointer';
   }
@@ -52,11 +48,21 @@ class Controller {
           const state = this.player2.gameBoard.receiveAttack(
             gridCell.dataset.cellPosition
           );
+
           if (state === 'Invalid Attack') return;
 
           gridCell.style.cursor = 'not-allowed';
           if (state.isHit) {
             gridCell.style.backgroundColor = 'rgb(254, 108, 108)';
+            if (state.isSunk) {
+              state.shipDOM.style.display = 'block';
+              if (state.gameEnd) {
+                setTimeout(() => {
+                  window.alert('YOU WON!');
+                  window.location.href = '';
+                }, 50);
+              }
+            }
           } else {
             gridCell.style.backgroundColor = 'rgb(152, 200, 255)';
 
@@ -73,6 +79,13 @@ class Controller {
 
             while (state.isHit) {
               gridCell2.style.backgroundColor = 'rgb(254, 108, 108)';
+
+              if (state.isSunk) {
+                if (state.gameEnd) {
+                  window.alert('YOU LOST!');
+                  window.location.href = '';
+                }
+              }
 
               const idx = Math.floor(Math.random() * arr.length);
               grid.delete(arr[idx]);
@@ -98,13 +111,13 @@ class Controller {
     });
   }
   generatePlayer2NPCShips() {
-    const DOM_SHIPS = [...this.player2.DOM_SHIPS];
+    const DOM_SHIPS = [...this.player2.gameBoard.ships];
 
     while (DOM_SHIPS.length) {
-      const [DOM_SHIP] = DOM_SHIPS.splice(
-        Math.floor(Math.random() * DOM_SHIPS.length),
-        1
-      );
+      const idx = Math.floor(Math.random() * DOM_SHIPS.length);
+      const { DOM: DOM_SHIP } = DOM_SHIPS[idx];
+      DOM_SHIPS.splice(idx, 1);
+
       DOM_SHIP.style.display = 'none';
       const ship = this.player2.gameBoard.placeShip({ id: DOM_SHIP.dataset.id });
 
@@ -139,11 +152,13 @@ class Controller {
 
   generateDraggableShips() {
     this.dragCont.style.width = `${this.player.DOM.clientWidth}px`;
-    for (const shipEL of this.player.DOM_SHIPS) {
-      shipEL.draggable = true;
-      shipEL.style.cursor = 'move';
+    console.log(this.player.gameBoard.ships);
 
-      shipEL.addEventListener('dragstart', (e) => {
+    for (const { DOM } of this.player.gameBoard.ships) {
+      DOM.draggable = true;
+      DOM.style.cursor = 'move';
+
+      DOM.addEventListener('dragstart', (e) => {
         if (this.isGameStarted) return;
         const gridCell = e.target.closest('.grid-cell');
         if (gridCell) {
@@ -154,7 +169,7 @@ class Controller {
         e.target.style.zIndex = 0;
         this.dragged = e.target;
       });
-      shipEL.addEventListener('dragend', (e) => {
+      DOM.addEventListener('dragend', (e) => {
         if (this.isGameStarted) return;
         const gridCell = e.target.closest('.grid-cell');
         if (gridCell) {
@@ -164,7 +179,7 @@ class Controller {
         }
         e.target.style.zIndex = 1;
       });
-      shipEL.addEventListener('click', (e) => {
+      DOM.addEventListener('click', (e) => {
         if (this.isGameStarted) return;
         //**********************//
         // Handle changin directions if clicked
@@ -173,7 +188,7 @@ class Controller {
         if (!gridCell) return;
 
         const gridPos = gridCell.dataset.cellPosition;
-        const { length, direction, id } = shipEL.dataset;
+        const { length, direction, id } = DOM.dataset;
 
         const coords = new Set([gridPos]);
 
@@ -187,21 +202,20 @@ class Controller {
 
         const ship = this.player.gameBoard.placeShip({ coords, id });
         if (!ship) return 'Invalid Ship Position';
-        shipEL.dataset.direction = direction === 'vertical' ? 'horizontal' : 'vertical';
+        DOM.dataset.direction = direction === 'vertical' ? 'horizontal' : 'vertical';
 
-        shipEL.style.width =
+        DOM.style.width =
           direction === 'vertical' ? `calc(4.2rem * ${length})` : '2.8rem';
-        shipEL.style.height =
+        DOM.style.height =
           direction === 'vertical' ? '2.8rem' : `calc(4.2rem * ${length})`;
 
-        shipEL.classList.add(
-          direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y'
-        );
-        shipEL.classList.remove(
+        DOM.classList.add(direction === 'vertical' ? 'ship-placed-x' : 'ship-placed-y');
+        DOM.classList.remove(
           direction === 'vertical' ? 'ship-placed-y' : 'ship-placed-x'
         );
       });
-      this.dragCont.append(shipEL);
+
+      this.dragCont.append(DOM);
     }
   }
 

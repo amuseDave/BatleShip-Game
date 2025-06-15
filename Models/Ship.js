@@ -4,6 +4,7 @@ class Ship {
     this.id = crypto.randomUUID();
     this.hits = 0;
     this.coords = new Set();
+    this.DOM = this.createDOM();
   }
 
   hit() {
@@ -13,23 +14,18 @@ class Ship {
   isSunk() {
     return this.hits >= this.length;
   }
+  createDOM() {
+    const div = document.createElement('div');
 
-  static buildDOM(ships) {
-    const DOM_SHIPS = [];
-    for (const { length, id } of ships) {
-      const div = document.createElement('div');
+    div.dataset.id = this.id;
+    div.dataset.length = this.length;
+    div.dataset.direction = 'horizontal';
 
-      div.dataset.id = id;
-      div.dataset.length = length;
-      div.dataset.direction = 'horizontal';
+    div.classList.add('ship');
+    div.style.width = `calc(4.2rem * ${this.length})`;
+    div.style.height = '2.8rem';
 
-      div.classList.add('ship');
-      div.style.width = `calc(4.2rem * ${length})`;
-      div.style.height = '2.8rem';
-
-      DOM_SHIPS.push(div);
-    }
-    return DOM_SHIPS;
+    return div;
   }
 }
 
