@@ -43,6 +43,7 @@ class Controller {
     this.player2.DOM.style.cursor = 'pointer';
   }
   generateControls() {
+    const grid = GameBoard.buildGrid(10);
     this.player2.DOM.addEventListener('click', (e) => {
       if (this.player.isMyTurn && this.isGameStarted) {
         const gridCell = e.target.closest('.grid-cell');
@@ -53,12 +54,38 @@ class Controller {
           );
           if (state === 'Invalid Attack') return;
 
-          if (state.isHit) gridCell.style.backgroundColor = 'rgb(254, 108, 108)';
-          else {
-            gridCell.style.backgroundColor = 'rgb(152, 200, 255)';
-          }
-
           gridCell.style.cursor = 'not-allowed';
+          if (state.isHit) {
+            gridCell.style.backgroundColor = 'rgb(254, 108, 108)';
+          } else {
+            gridCell.style.backgroundColor = 'rgb(152, 200, 255)';
+
+            // ROBOT ATTACK
+            this.player.isMyTurn = false;
+            const arr = [...grid];
+            const idx = Math.floor(Math.random() * arr.length);
+            grid.delete(arr[idx]);
+            let gridCell2 = this.player.DOM.querySelector(
+              `[data-cell-position="${arr[idx]}"]`
+            );
+            let state = this.player.gameBoard.receiveAttack(arr[idx]);
+            arr.splice(idx, 1);
+
+            while (state.isHit) {
+              gridCell2.style.backgroundColor = 'rgb(254, 108, 108)';
+
+              const idx = Math.floor(Math.random() * arr.length);
+              grid.delete(arr[idx]);
+              gridCell2 = this.player.DOM.querySelector(
+                `[data-cell-position="${arr[idx]}"]`
+              );
+              state = this.player.gameBoard.receiveAttack(arr[idx]);
+              arr.splice(idx, 1);
+            }
+
+            gridCell2.style.backgroundColor = 'rgb(152, 200, 255)';
+            this.player.isMyTurn = true;
+          }
         }
       }
     });

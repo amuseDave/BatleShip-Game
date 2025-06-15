@@ -4,6 +4,7 @@ class GameBoard {
   constructor(size = 10) {
     this.size = size;
     this.ships = [new Ship(5), new Ship(4), new Ship(3), new Ship(3), new Ship(2)];
+    // this.ships = [new Ship(3), new Ship(2)];
     this.attacks = new Set(); // Track attacks on the game board
     this.validGrid = GameBoard.buildGrid(this.size);
   }
